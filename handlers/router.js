@@ -65,7 +65,7 @@ bot.sendMessage(chatId,
 reply_markup:{
 inline_keyboard:[
 [{text:"🔗 Mega Links",callback_data:"links"}],
-[{text:"🎥 Learning Videos",callback_data:"videos"}],
+[{text:"🎥 Direct HD Videos",callback_data:"videos"}],
 [{text:"⬅ Back",callback_data:"content"}]
 ]
 }
