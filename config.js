@@ -1,13 +1,15 @@
+require("dotenv").config()
+
 module.exports = {
 
 BOT_TOKEN: process.env.BOT_TOKEN,
 
 ADMIN_ID: process.env.ADMIN_ID,
 
-ADMIN_USERNAME: "kiptookd",
+ADMIN_USERNAME: process.env.ADMIN_USERNAME,
 
-BTC_WALLET: "bc1q5tn7aug2guc002eaf8utulmvqz386vylyjkk8h",
+BTC_WALLET: process.env.BTC_WALLET,
 
-USDT_WALLET: "0xCe3E1b0A7072e7c62D1EE3BBcF85D4d1Dc0e50e8"
+USDT_WALLET: process.env.USDT_WALLET
 
 }

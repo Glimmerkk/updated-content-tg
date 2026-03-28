@@ -2,7 +2,6 @@ require("dotenv").config()
 
 const TelegramBot = require("node-telegram-bot-api")
 const express = require("express")
-
 const config = require("./config")
 
 console.log("Content bot starting...")
@@ -12,7 +11,7 @@ console.log("Content bot starting...")
 // ==========================
 
 const bot = new TelegramBot(config.BOT_TOKEN,{
-polling:true
+    polling:true
 })
 
 module.exports = bot
@@ -38,13 +37,13 @@ console.log("Handler loading error:",err)
 
 
 // ==========================
-// EXPRESS SERVER (RENDER PORT FIX)
+// EXPRESS SERVER (RENDER)
 // ==========================
 
 const app = express()
 
 app.get("/",(req,res)=>{
-res.send("Telegram bot is running")
+res.send("Telegram bot is running 24/7")
 })
 
 const PORT = process.env.PORT || 3000
@@ -55,22 +54,7 @@ console.log(`Server running on port ${PORT}`)
 
 
 // ==========================
-// KEEP ALIVE PING
-// ==========================
-
-setInterval(()=>{
-
-const https = require("https")
-
-https.get(process.env.RENDER_EXTERNAL_URL,(res)=>{
-console.log("Self ping success")
-})
-
-}, 300000) // every 5 minutes
-
-
-// ==========================
-// CRASH PROTECTION
+// ERROR PROTECTION
 // ==========================
 
 process.on("uncaughtException",(err)=>{

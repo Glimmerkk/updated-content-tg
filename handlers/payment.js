@@ -2,49 +2,68 @@ const bot = require("../bot")
 const config = require("../config")
 const fs = require("fs")
 
+const DATA_DIR = "./data"
 const PAYMENTS_FILE = "./data/payments.json"
 
 
-function getPayments(){
+// ==========================
+// ENSURE DATA FILE EXISTS
+// ==========================
+
+if(!fs.existsSync(DATA_DIR)){
+fs.mkdirSync(DATA_DIR)
+}
 
 if(!fs.existsSync(PAYMENTS_FILE)){
 fs.writeFileSync(PAYMENTS_FILE,JSON.stringify([],null,2))
 }
 
-return JSON.parse(fs.readFileSync(PAYMENTS_FILE))
 
+// ==========================
+// READ PAYMENTS
+// ==========================
+
+function getPayments(){
+return JSON.parse(fs.readFileSync(PAYMENTS_FILE))
 }
 
+
+// ==========================
+// SAVE PAYMENTS
+// ==========================
 
 function savePayments(payments){
-
 fs.writeFileSync(PAYMENTS_FILE,JSON.stringify(payments,null,2))
-
 }
 
 
-function generateId(){
+// ==========================
+// GENERATE PAYMENT ID
+// ==========================
 
+function generatePaymentId(){
 return "PAY"+Date.now()
-
 }
 
 
-// ================= SCREENSHOT PAYMENT =================
+// ==========================
+// RECEIVE SCREENSHOT PAYMENT
+// ==========================
 
 bot.on("photo",(msg)=>{
 
 const chatId = msg.chat.id
 const photo = msg.photo[msg.photo.length-1].file_id
-const id = generateId()
+
+const paymentId = generatePaymentId()
 
 let payments = getPayments()
 
 let payment = {
 
-id:id,
+id:paymentId,
 user:chatId,
-method:"screenshot",
+method:"crypto",
 proof:photo,
 status:"pending",
 time:Date.now()
@@ -56,10 +75,9 @@ payments.push(payment)
 savePayments(payments)
 
 bot.sendMessage(chatId,
-"✅ Screenshot received. Waiting for admin approval.")
+"✅ Payment proof received. Waiting for admin approval.")
 
 
-// SEND TO ADMIN
 
 bot.sendPhoto(
 
@@ -67,18 +85,18 @@ config.ADMIN_ID,
 photo,
 
 {
-caption:`💰 New Payment Screenshot
+caption:`💰 New Payment
 
 User ID: ${chatId}
-Username: @${msg.from.username || "No username"}
+Username: @${msg.from.username || "no_username"}
 
-Payment ID: ${id}`,
+Payment ID: ${paymentId}`,
 
 reply_markup:{
 inline_keyboard:[
 [
-{text:"Approve",callback_data:`approve_${id}`},
-{text:"Reject",callback_data:`reject_${id}`}
+{text:"Approve",callback_data:`approve_${paymentId}`},
+{text:"Reject",callback_data:`reject_${paymentId}`}
 ]
 ]
 }
@@ -90,9 +108,9 @@ inline_keyboard:[
 })
 
 
-
-
-// ================= GIFTCARD CODE =================
+// ==========================
+// RECEIVE GIFTCARD CODE
+// ==========================
 
 bot.on("message",(msg)=>{
 
@@ -101,19 +119,17 @@ if(!msg.text) return
 const chatId = msg.chat.id
 const text = msg.text.trim()
 
-// ignore commands
 if(text.startsWith("/")) return
 
-// detect possible giftcard codes
 if(text.length >= 6){
 
-const id = generateId()
+const paymentId = generatePaymentId()
 
 let payments = getPayments()
 
 let payment = {
 
-id:id,
+id:paymentId,
 user:chatId,
 method:"giftcard",
 code:text,
@@ -127,10 +143,8 @@ payments.push(payment)
 savePayments(payments)
 
 bot.sendMessage(chatId,
-"🎁 Giftcard code received. Waiting for admin approval.")
+"🎁 Giftcard received. Waiting for admin approval.")
 
-
-// SEND TO ADMIN
 
 bot.sendMessage(
 
@@ -139,19 +153,19 @@ config.ADMIN_ID,
 `🎁 New Giftcard Payment
 
 User ID: ${chatId}
-Username: @${msg.from.username || "No username"}
+Username: @${msg.from.username || "no_username"}
 
-Giftcard Code:
+Code:
 ${text}
 
-Payment ID: ${id}`,
+Payment ID: ${paymentId}`,
 
 {
 reply_markup:{
 inline_keyboard:[
 [
-{text:"Approve",callback_data:`approve_${id}`},
-{text:"Reject",callback_data:`reject_${id}`}
+{text:"Approve",callback_data:`approve_${paymentId}`},
+{text:"Reject",callback_data:`reject_${paymentId}`}
 ]
 ]
 }
